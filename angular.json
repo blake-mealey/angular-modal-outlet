@@ -121,6 +121,46 @@
           }
         }
       }
+    },
+    "angular-modal-outlet": {
+      "root": "projects/angular-modal-outlet",
+      "sourceRoot": "projects/angular-modal-outlet/src",
+      "projectType": "library",
+      "prefix": "ch",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/angular-modal-outlet/tsconfig.lib.json",
+            "project": "projects/angular-modal-outlet/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "project": "projects/angular-modal-outlet/ng-package.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/angular-modal-outlet/src/test.ts",
+            "tsConfig": "projects/angular-modal-outlet/tsconfig.spec.json",
+            "karmaConfig": "projects/angular-modal-outlet/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/angular-modal-outlet/tsconfig.lib.json",
+              "projects/angular-modal-outlet/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "angular-modal-outlet-app"
