@@ -1,9 +1,10 @@
 import { NgModule } from '@angular/core';
+import { ModalOutletComponent } from './components/modal-outlet/modal-outlet.component';
 
 @NgModule({
   imports: [
   ],
-  declarations: [],
-  exports: []
+  declarations: [ModalOutletComponent],
+  exports: [ModalOutletComponent]
 })
 export class AngularModalOutletModule { }
