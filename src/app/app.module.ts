@@ -1,4 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { AngularModalOutletModule } from 'angular-modal-outlet';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
@@ -8,7 +9,8 @@ import { AppComponent } from './app.component';
     AppComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    AngularModalOutletModule
   ],
   providers: [],
   bootstrap: [AppComponent]
