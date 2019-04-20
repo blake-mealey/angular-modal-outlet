@@ -33,7 +33,6 @@ export class ModalOutletService {
   }
 
   public closeModal(result: any = null) {
-    console.log('modal closed');
     // Tell the modal component outlet to close the modal
     this.modalComponent.next(null);
 
