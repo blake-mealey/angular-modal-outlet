@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ExampleDialogComponent } from '../example-dialog/example-dialog.component';
 import { ModalOutletService } from 'angular-modal-outlet';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -8,12 +9,14 @@ import { ModalOutletService } from 'angular-modal-outlet';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'angular-modal-outlet-app';
+  public result: string;
 
-  constructor(private modalOutletService: ModalOutletService) {
-  }
+  constructor(private modalOutletService: ModalOutletService) {}
 
   public openModal(): void {
-    this.modalOutletService.showModal(ExampleDialogComponent, {});
+    this.modalOutletService.showModal(ExampleDialogComponent, {})
+      .pipe(filter(Boolean)).subscribe((result) => {
+        this.result = result;
+      });
   }
 }
