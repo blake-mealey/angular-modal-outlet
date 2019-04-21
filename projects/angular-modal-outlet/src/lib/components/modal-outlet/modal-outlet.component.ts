@@ -1,9 +1,7 @@
 import {
-  Component, OnInit, AfterViewInit,
-  ViewChildren, QueryList, ComponentRef,
-  ComponentFactoryResolver, ChangeDetectorRef } from '@angular/core';
+  Component, AfterViewInit,
+  ComponentRef, ComponentFactoryResolver, ChangeDetectorRef, ViewContainerRef, ViewChild } from '@angular/core';
 import { SubscriberComponent } from '../subscriber-component';
-import { ModalOutletHostDirective } from '../../directives/modal-outlet-host.directive';
 import { ModalComponent } from '../../interfaces/modal-component';
 import { ModalOutletService } from '../../services/modal-outlet/modal-outlet.service';
 import { ComponentModel } from '../../interfaces/component-model';
@@ -52,65 +50,47 @@ const popOut = animation([
     ])
   ]
 })
-export class ModalOutletComponent extends SubscriberComponent implements OnInit, AfterViewInit {
+export class ModalOutletComponent extends SubscriberComponent implements AfterViewInit {
 
   public componentModel: ComponentModel;
 
-  @ViewChildren(ModalOutletHostDirective)
-  public modalHosts: QueryList<ModalOutletHostDirective>;
-
-  private modalHost: ModalOutletHostDirective;
+  @ViewChild('outletHost', {read: ViewContainerRef})
+  modalHostRef: ViewContainerRef;
 
   private componentRef: ComponentRef<any>;
 
-  constructor(private modalService: ModalOutletService,
+  constructor(private modalOutletService: ModalOutletService,
               private componentFactoryResolver: ComponentFactoryResolver,
               private changeDetectorRef: ChangeDetectorRef) {
     super();
   }
 
-  public ngOnInit(): void {
-    this.addSubscription(this.modalService.modalComponent$.subscribe((componentModel: ComponentModel) => {
-      this.componentModel = componentModel;
-      this.loadComponent();
-    }));
-  }
-
   public ngAfterViewInit(): void {
-    this.updateModalHost(this.modalHosts);
-    this.addSubscription(this.modalHosts.changes.subscribe((hosts) => {
-      this.updateModalHost(hosts);
-    }));
-  }
-
-  private updateModalHost(hosts: QueryList<ModalOutletHostDirective>): void {
-    if (!hosts) { return; }
-    this.modalHost = hosts.first;
-    this.loadComponent();
+    // Once the view is ready, listen to the modal outlet service for new modals
+    this.addSubscription(this.modalOutletService.modalComponentModel$
+      .subscribe((componentModel) => {
+        // Update our component modal, and if there is a new modal, load is
+        this.componentModel = componentModel;
+        if (this.componentModel) {
+          this.loadComponent();
+        }
+      }));
   }
 
   private loadComponent(): void {
-    if (!this.componentModel || !this.modalHost) {
-      return;
-    }
-
-    // Get and clear the view container reference from the modal host directive
-    const viewContainerRef = this.modalHost.viewContainerRef;
-    viewContainerRef.clear();
-
     // Get a component factory for the component type
     const componentFactory = this.componentFactoryResolver
       .resolveComponentFactory(this.componentModel.componentType);
 
-    // Create the component on the view container reference and give it the input data
-    this.componentRef = viewContainerRef.createComponent(componentFactory);
+    // Create the component as a child of the modal host
+    this.componentRef = this.modalHostRef.createComponent(componentFactory);
 
-    // Initialize the component instance
+    // Initialize the component instance with the input data and listen to its `result` event
     const componentInstance = (<ModalComponent>this.componentRef.instance);
     componentInstance.data = this.componentModel.data;
     if (componentInstance.result) {
       componentInstance.result.subscribe((result: any) => {
-        this.modalService.closeModal(result);
+        this.modalOutletService.closeModal(result);
       });
     } else {
       console.warn('The modal component instance\'s `result` EventEmitter is undefined. ' +
@@ -121,9 +101,18 @@ export class ModalOutletComponent extends SubscriberComponent implements OnInit,
     this.changeDetectorRef.detectChanges();
   }
 
+  public onFadeDone(toState: string) {
+    // Whenever we finish animating out, clear the children of the modal host
+    // to destroy whatever modal component was loaded
+    if (toState === 'out') {
+      this.modalHostRef.clear();
+    }
+  }
+
   public onOverlayClicked(event: { target: any; }) {
+    // When we get a click event that was outside of the modal component, close the current modal
     if (!this.componentRef || !this.componentRef.location.nativeElement.contains(event.target)) {
-      this.modalService.closeModal();
+      this.modalOutletService.closeModal();
     }
   }
 }

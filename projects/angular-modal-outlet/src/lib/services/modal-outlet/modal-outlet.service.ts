@@ -6,14 +6,17 @@ import { ComponentModel } from '../../interfaces/component-model';
   providedIn: 'root'
 })
 export class ModalOutletService {
-  private modalComponent: BehaviorSubject<ComponentModel>;
-  public modalComponent$: Observable<ComponentModel>;
+  /**
+   * An observable tracking the current modal component's model
+   */
+  public modalComponentModel$: Observable<ComponentModel>;
+  private modalComponentModel: BehaviorSubject<ComponentModel>;
 
   private currentSubscriber: Subscriber<ComponentModel>;
 
   constructor() {
-    this.modalComponent = new BehaviorSubject(null);
-    this.modalComponent$ = this.modalComponent.asObservable();
+    this.modalComponentModel = new BehaviorSubject(null);
+    this.modalComponentModel$ = this.modalComponentModel.asObservable();
   }
 
   /**
@@ -29,7 +32,7 @@ export class ModalOutletService {
     this.closeModal();
 
     // Tell the modal component outlet there is a new modal
-    this.modalComponent.next({
+    this.modalComponentModel.next({
       componentType: componentType,
       data: data
     });
@@ -47,7 +50,7 @@ export class ModalOutletService {
    */
   public closeModal(result: any = null): void {
     // Tell the modal component outlet to close the modal
-    this.modalComponent.next(null);
+    this.modalComponentModel.next(null);
 
     if (this.currentSubscriber) {
       // Let the subscriber to the modal know that the modal closed with whatever result we have
@@ -55,5 +58,14 @@ export class ModalOutletService {
       this.currentSubscriber.complete();
       this.currentSubscriber = null;
     }
+  }
+
+  /**
+   * Checks if there is currently an open modal
+   *
+   * @returns whether or not there is currently an open modal
+   */
+  public isModalOpen(): boolean {
+    return this.modalComponentModel.getValue() !== null;
   }
 }

@@ -1,3 +1,7 @@
-<div class="modal-outlet-component" [@fade]="componentModel ? 'in' : 'out'" on-click="onOverlayClicked($event)">
-  <ng-template class="modal-component" chModalOutletHost></ng-template>
+<div class="modal-outlet-component"
+     on-click="onOverlayClicked($event)"
+     [@fade]="componentModel ? 'in' : 'out'"
+     (@fade.done)="onFadeDone($event.toState)">
+
+  <ng-template class="modal-component" #outletHost></ng-template>
 </div>
