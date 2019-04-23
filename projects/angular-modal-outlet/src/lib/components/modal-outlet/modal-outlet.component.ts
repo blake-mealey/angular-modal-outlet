@@ -52,12 +52,12 @@ const popOut = animation([
 })
 export class ModalOutletComponent extends SubscriberComponent implements AfterViewInit {
 
-  public componentModel: ComponentModel;
-
+  // The ViewContainer to add the modal component to
   @ViewChild('outletHost', {read: ViewContainerRef})
   modalHostRef: ViewContainerRef;
 
-  private componentRef: ComponentRef<any>;
+  // A reference to the modal component
+  public componentRef: ComponentRef<any>;
 
   constructor(private modalOutletService: ModalOutletService,
               private componentFactoryResolver: ComponentFactoryResolver,
@@ -65,29 +65,45 @@ export class ModalOutletComponent extends SubscriberComponent implements AfterVi
     super();
   }
 
+  /**
+   * Starts listening to the ModalOutletService for the latest modal component,
+   * once the outlet is ready to display modal components
+   */
   public ngAfterViewInit(): void {
     // Once the view is ready, listen to the modal outlet service for new modals
     this.addSubscription(this.modalOutletService.modalComponentModel$
       .subscribe((componentModel) => {
-        // Update our component modal, and if there is a new modal, load is
-        this.componentModel = componentModel;
-        if (this.componentModel) {
-          this.loadComponent();
-        }
+        // Update our component modal, and if there is a new modal, load it
+        this.unloadComponent();
+        this.loadComponent(componentModel);
       }));
   }
 
-  private loadComponent(): void {
+  /**
+   * Unloads the current component
+   */
+  public unloadComponent() {
+    this.componentRef = null;
+  }
+
+  /**
+   * Loads a modal component from a given model
+   * @param componentModel the model to load a component from
+   */
+  private loadComponent(componentModel: ComponentModel): void {
+    // Do nothing if we were not given a component model
+    if (!componentModel) { return; }
+
     // Get a component factory for the component type
     const componentFactory = this.componentFactoryResolver
-      .resolveComponentFactory(this.componentModel.componentType);
+      .resolveComponentFactory(componentModel.componentType);
 
     // Create the component as a child of the modal host
     this.componentRef = this.modalHostRef.createComponent(componentFactory);
 
     // Initialize the component instance with the input data and listen to its `result` event
     const componentInstance = (<ModalComponent>this.componentRef.instance);
-    componentInstance.data = this.componentModel.data;
+    componentInstance.data = componentModel.data;
     if (componentInstance.result) {
       componentInstance.result.subscribe((result: any) => {
         this.modalOutletService.closeModal(result);
