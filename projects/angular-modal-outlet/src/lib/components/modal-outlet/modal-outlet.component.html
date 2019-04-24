@@ -1,7 +1,8 @@
-<div class="modal-outlet-component"
+<div #modalOverlay
+     class="modal-overlay"
      on-click="onOverlayClicked($event)"
-     [@fade]="componentRef ? 'in' : 'out'"
+     [@fade]="modalOutletService.isModalOpen() ? 'in' : 'out'"
      (@fade.done)="onFadeDone($event.toState)">
 
-  <div #outletHost></div>
+  <div #modalHost></div>
 </div>

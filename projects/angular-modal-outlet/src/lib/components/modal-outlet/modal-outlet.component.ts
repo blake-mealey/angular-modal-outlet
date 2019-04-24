@@ -1,8 +1,7 @@
 import {
   Component, AfterViewInit,
-  ComponentRef, ComponentFactoryResolver, ChangeDetectorRef, ViewContainerRef, ViewChild } from '@angular/core';
+  ComponentFactoryResolver, ChangeDetectorRef, ViewContainerRef, ViewChild, ElementRef, EventEmitter } from '@angular/core';
 import { SubscriberComponent } from '../subscriber-component';
-import { ModalComponent } from '../../interfaces/modal-component';
 import { ModalOutletService } from '../../services/modal-outlet/modal-outlet.service';
 import { ComponentModel } from '../../interfaces/component-model';
 import { animation, style, animate, trigger, state, transition, useAnimation } from '@angular/animations';
@@ -53,13 +52,14 @@ const popOut = animation([
 export class ModalOutletComponent extends SubscriberComponent implements AfterViewInit {
 
   // The ViewContainer to add the modal component to
-  @ViewChild('outletHost', {read: ViewContainerRef})
+  @ViewChild('modalHost', {read: ViewContainerRef})
   modalHostRef: ViewContainerRef;
 
-  // A reference to the modal component
-  public componentRef: ComponentRef<any>;
+  // The Element of the modal overlay
+  @ViewChild('modalOverlay', {read: ElementRef})
+  modalOverlayRef: ElementRef;
 
-  constructor(private modalOutletService: ModalOutletService,
+  constructor(public modalOutletService: ModalOutletService,
               private componentFactoryResolver: ComponentFactoryResolver,
               private changeDetectorRef: ChangeDetectorRef) {
     super();
@@ -73,17 +73,8 @@ export class ModalOutletComponent extends SubscriberComponent implements AfterVi
     // Once the view is ready, listen to the modal outlet service for new modals
     this.addSubscription(this.modalOutletService.modalComponentModel$
       .subscribe((componentModel) => {
-        // Update our component modal, and if there is a new modal, load it
-        this.unloadComponent();
         this.loadComponent(componentModel);
       }));
-  }
-
-  /**
-   * Unloads the current component
-   */
-  public unloadComponent() {
-    this.componentRef = null;
   }
 
   /**
@@ -99,21 +90,29 @@ export class ModalOutletComponent extends SubscriberComponent implements AfterVi
       .resolveComponentFactory(componentModel.componentType);
 
     // Create the component as a child of the modal host
-    this.componentRef = this.modalHostRef.createComponent(componentFactory);
+    const componentRef = this.modalHostRef.createComponent(componentFactory);
+    const componentInstance = componentRef.instance;
 
-    // Initialize the component instance with the input data and listen to its `result` event
-    const componentInstance = (<ModalComponent>this.componentRef.instance);
-    componentInstance.data = componentModel.data;
-    if (componentInstance.result) {
-      componentInstance.result.subscribe((result: any) => {
+    // Initialize the component instance with the given context
+    for (const key in componentModel.context) {
+      if (!componentModel.context.hasOwnProperty(key)) { continue; }
+      componentInstance[key] = componentModel.context[key];
+    }
+
+    // Listen to the component instance's result event
+    const resultEvent = componentInstance[componentModel.resultEventName];
+    if (resultEvent && resultEvent instanceof EventEmitter) {
+      resultEvent.subscribe((result: any) => {
         this.modalOutletService.closeModal(result);
       });
     } else {
-      console.warn('The modal component instance\'s `result` EventEmitter is undefined. ' +
-        'Result events will not be captured.');
+      console.warn(`The model component instance does not contain a valid EventEmitter with the name ${componentModel.resultEventName}. ` +
+        'Result events will not be captured for this modal. ' +
+        'Double check the name and make sure you are instantiating it in your component\'s constructor.');
     }
 
     // Tell Angular to re-check for changes because we manually set the data on the component instance
+    // TODO: determine if this is still necessary. If it is, check if we can do it on the componentRef instead
     this.changeDetectorRef.detectChanges();
   }
 
@@ -126,8 +125,9 @@ export class ModalOutletComponent extends SubscriberComponent implements AfterVi
   }
 
   public onOverlayClicked(event: { target: any; }) {
-    // When we get a click event that was outside of the modal component, close the current modal
-    if (!this.componentRef || !this.componentRef.location.nativeElement.contains(event.target)) {
+    // When we get a click event on the overlay, close the current modal. Don't close the modal
+    // if the click was not on the overlay because that could include the modal itself.
+    if (this.modalOverlayRef.nativeElement === event.target) {
       this.modalOutletService.closeModal();
     }
   }

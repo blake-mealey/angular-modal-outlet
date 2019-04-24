@@ -1,4 +1,7 @@
+import { Type } from '@angular/core';
+
 export interface ComponentModel {
-  componentType: any;
-  data: any;
+  componentType: Type<any>;
+  context: Object;
+  resultEventName: string;
 }

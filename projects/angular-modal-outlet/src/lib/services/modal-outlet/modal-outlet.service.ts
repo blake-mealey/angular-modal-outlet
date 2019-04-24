@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Type } from '@angular/core';
 import { BehaviorSubject, Observable, Subscriber } from 'rxjs';
 import { ComponentModel } from '../../interfaces/component-model';
 
@@ -21,20 +21,21 @@ export class ModalOutletService {
 
   /**
    * Opens a modal containing a new component instance of the given component type, and populated
-   * with the given data. This will close any open modals before opening the next modal.
+   * with the given context. This will close any open modals before opening the next modal.
    *
    * @param componentType the class of the component to instantiate
-   * @param data the data to populate the component instance with
+   * @param context an object to copy into the component instance
    * @returns an observable which will send an event for the result of the dialog
    */
-  public showModal(componentType: any, data: any = null): Observable<ComponentModel> {
+  public showModal<T>(componentType: Type<T>, context: {[K in keyof T]?: T[K]}, resultEventName: keyof T): Observable<ComponentModel> {
     // Close any existing modal without a result
     this.closeModal();
 
     // Tell the modal component outlet there is a new modal
     this.modalComponentModel.next({
-      componentType: componentType,
-      data: data
+      componentType,
+      context,
+      resultEventName: <string>resultEventName
     });
 
     // Return an observable for the new modal

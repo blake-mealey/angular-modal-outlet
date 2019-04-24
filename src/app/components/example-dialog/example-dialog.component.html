@@ -1,10 +1,13 @@
 <div class="example-dialog-component">
   <div class="content">
+      {{name}}
+      <br>
+
       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam egestas tempus dolor, non commodo lacus pharetra nec. Quisque turpis diam, posuere id nisi in, dapibus tincidunt dui. Aliquam quis pretium sem, a convallis nunc. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Curabitur lobortis semper metus, sed venenatis libero aliquam vel. Integer interdum est ut dolor dapibus interdum. Morbi consectetur, libero a tempor consequat, velit odio sodales sapien, ut faucibus libero libero eu leo.
   </div>
 
   <div class="options">
-    <a (click)="okClicked()">ok</a>
-    <a (click)="modalOutletService.closeModal(false)">cancel</a>
+    <a (click)="result.next(word)">ok</a>
+    <a (click)="result.next()">cancel</a>
   </div>
 </div>

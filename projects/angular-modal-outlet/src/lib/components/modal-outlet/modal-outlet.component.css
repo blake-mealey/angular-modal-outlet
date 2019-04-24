@@ -1,4 +1,4 @@
-.modal-outlet-component {
+.modal-overlay {
   position: fixed;
   background-color: rgba(0, 0, 0, 0.50);
   z-index: 1000;

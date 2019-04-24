@@ -14,9 +14,11 @@ export class AppComponent {
   constructor(private modalOutletService: ModalOutletService) {}
 
   public openModal(): void {
-    this.modalOutletService.showModal(ExampleDialogComponent, {})
-      .pipe(filter(Boolean)).subscribe((result) => {
-        this.result = result;
-      });
+    this.modalOutletService.showModal(ExampleDialogComponent, {
+      name: 'Hello, World!',
+      word: 'Lorem Ipsum!'
+    }, 'result').pipe(filter(Boolean)).subscribe((result) => {
+      this.result = result;
+    });
   }
 }
