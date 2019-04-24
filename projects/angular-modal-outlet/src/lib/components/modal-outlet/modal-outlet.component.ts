@@ -99,9 +99,7 @@ export class ModalOutletComponent extends SubscriberComponent implements AfterVi
     // Listen to the component instance's result event
     const resultEvent = componentInstance[componentModel.resultEventName];
     if (resultEvent && resultEvent instanceof EventEmitter) {
-      resultEvent.subscribe((result: any) => {
-        this.modalOutletService.closeModal(result);
-      });
+      resultEvent.subscribe((result: any) => this.modalOutletService.closeModal(result));
     } else {
       console.warn(`The model component instance does not contain a valid EventEmitter with the name ${componentModel.resultEventName}. ` +
         'Result events will not be captured for this modal. ' +
