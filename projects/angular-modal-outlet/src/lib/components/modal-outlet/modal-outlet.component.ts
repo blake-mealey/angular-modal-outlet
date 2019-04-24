@@ -5,6 +5,7 @@ import { SubscriberComponent } from '../subscriber-component';
 import { ModalOutletService } from '../../services/modal-outlet/modal-outlet.service';
 import { ComponentModel } from '../../interfaces/component-model';
 import { animation, style, animate, trigger, state, transition, useAnimation } from '@angular/animations';
+import { filter } from 'rxjs/operators';
 
 const popDefaultParams = {
   duration: '0.2s ease',
@@ -72,9 +73,8 @@ export class ModalOutletComponent extends SubscriberComponent implements AfterVi
   public ngAfterViewInit(): void {
     // Once the view is ready, listen to the modal outlet service for new modals
     this.addSubscription(this.modalOutletService.modalComponentModel$
-      .subscribe((componentModel) => {
-        this.loadComponent(componentModel);
-      }));
+      .pipe(filter(Boolean))
+      .subscribe((componentModel) => this.loadComponent(componentModel)));
   }
 
   /**
@@ -82,9 +82,6 @@ export class ModalOutletComponent extends SubscriberComponent implements AfterVi
    * @param componentModel the model to load a component from
    */
   private loadComponent(componentModel: ComponentModel): void {
-    // Do nothing if we were not given a component model
-    if (!componentModel) { return; }
-
     // Get a component factory for the component type
     const componentFactory = this.componentFactoryResolver
       .resolveComponentFactory(componentModel.componentType);
