@@ -1,6 +1,7 @@
-import { animation, style, animate, trigger, state, transition, useAnimation, group, query, animateChild } from '@angular/animations';
+import { animation, style, animate, trigger, state, transition,
+  useAnimation, group, query, animateChild, AnimationTriggerMetadata } from '@angular/animations';
 
-//region pop
+// #region pop
 const popDefaultParams = {
   duration: '0.2s ease',
   scale: 0.75
@@ -24,9 +25,9 @@ const popOut = animation([
 ], {
   params: popDefaultParams
 });
-//endregion
+// #endregion
 
-//region fade
+// #region fade
 const fadeDefaultParams = {
   duration: '0.2s ease'
 };
@@ -48,9 +49,9 @@ const fadeOut = animation([
 ], {
   params: fadeDefaultParams
 });
-//endregion
+// #endregion
 
-export const overlayFadeTrigger = trigger('overlayFade', [
+export const overlayFadeTrigger: AnimationTriggerMetadata = trigger('overlayFade', [
   state('out', style({
     display: 'none'
   })),
@@ -73,7 +74,7 @@ export const overlayFadeTrigger = trigger('overlayFade', [
   ])
 ]);
 
-export const modalFadeTrigger = trigger('modalFade', [
+export const modalFadeTrigger: AnimationTriggerMetadata = trigger('modalFade', [
   state('out', style({})),
   state('in', style({})),
   transition('out => in', [
