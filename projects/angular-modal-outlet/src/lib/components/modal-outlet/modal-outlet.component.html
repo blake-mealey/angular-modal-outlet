@@ -1,8 +1,12 @@
 <div #modalOverlay
      class="modal-overlay"
      on-click="onOverlayClicked($event)"
-     [@fade]="modalOutletService.isModalOpen() ? 'in' : 'out'"
-     (@fade.done)="onFadeDone($event.toState)">
+     [@overlayFade]="modalOutletService.isModalOpen() ? 'in' : 'out'">
 
-  <div #modalHost></div>
+  <div #modalOverlay
+       class="modal-container"
+       [@modalFade]="modalOutletService.isModalOpen() ? 'in' : 'out'"
+       (@modalFade.done)="onFadeDone($event.toState)">
+    <div #modalHost></div>
+  </div>
 </div>

@@ -1,53 +1,19 @@
 import {
-  Component, AfterViewInit,
-  ComponentFactoryResolver, ChangeDetectorRef, ViewContainerRef, ViewChild, ElementRef, EventEmitter } from '@angular/core';
+  Component, AfterViewInit, ComponentFactoryResolver, ChangeDetectorRef,
+  ViewContainerRef, ViewChild, ElementRef, EventEmitter, ViewChildren, QueryList } from '@angular/core';
 import { SubscriberComponent } from '../subscriber-component';
 import { ModalOutletService } from '../../services/modal-outlet/modal-outlet.service';
 import { ComponentModel } from '../../interfaces/component-model';
-import { animation, style, animate, trigger, state, transition, useAnimation } from '@angular/animations';
 import { filter } from 'rxjs/operators';
-
-const popDefaultParams = {
-  duration: '0.2s ease',
-  scale: 0.75
-};
-
-const popStyle = {
-  opacity: 0,
-  transform: 'scale({{ scale }})'
-};
-
-const popIn = animation([
-  style(popStyle),
-  animate('{{ duration }}')
-], {
-  params: popDefaultParams
-});
-
-const popOut = animation([
-  animate('{{ duration }}'),
-  style(popStyle)
-], {
-  params: popDefaultParams
-});
+import { overlayFadeTrigger, modalFadeTrigger } from '../../animations';
 
 @Component({
   selector: 'ch-modal-outlet',
   templateUrl: './modal-outlet.component.html',
   styleUrls: ['./modal-outlet.component.css'],
   animations: [
-    trigger('fade', [
-      state('out', style({
-        display: 'none'
-      })),
-      state('in', style({})),
-      transition('out => in', [
-        useAnimation(popIn)
-      ]),
-      transition('in => out', [
-        useAnimation(popOut)
-      ])
-    ])
+    overlayFadeTrigger,
+    modalFadeTrigger
   ]
 })
 export class ModalOutletComponent extends SubscriberComponent implements AfterViewInit {
@@ -57,8 +23,8 @@ export class ModalOutletComponent extends SubscriberComponent implements AfterVi
   modalHostRef: ViewContainerRef;
 
   // The Element of the modal overlay
-  @ViewChild('modalOverlay', {read: ElementRef})
-  modalOverlayRef: ElementRef;
+  @ViewChildren('modalOverlay', {read: ElementRef})
+  modalOverlayRefs: QueryList<ElementRef>;
 
   constructor(public modalOutletService: ModalOutletService,
               private componentFactoryResolver: ComponentFactoryResolver,
@@ -122,7 +88,7 @@ export class ModalOutletComponent extends SubscriberComponent implements AfterVi
   public onOverlayClicked(event: { target: any; }) {
     // When we get a click event on the overlay, close the current modal. Don't close the modal
     // if the click was not on the overlay because that could include the modal itself.
-    if (this.modalOverlayRef.nativeElement === event.target) {
+    if (this.modalOverlayRefs.find((overlayRef) => overlayRef.nativeElement === event.target)) {
       this.modalOutletService.closeModal();
     }
   }
