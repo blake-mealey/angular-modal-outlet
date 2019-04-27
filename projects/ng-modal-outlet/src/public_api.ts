@@ -1,5 +1,5 @@
 /*
- * Public API Surface of angular-modal-outlet
+ * Public API Surface of ng-modal-outlet
  */
 
 // Interfaces
@@ -12,4 +12,4 @@ export * from './lib/components/modal-outlet/modal-outlet.component';
 export * from './lib/services/modal-outlet/modal-outlet.service';
 
 // Module
-export * from './lib/angular-modal-outlet.module';
+export * from './lib/ng-modal-outlet.module';

@@ -18,11 +18,11 @@
       "dom"
     ],
     "paths": {
-      "angular-modal-outlet": [
-        "dist/angular-modal-outlet"
+      "ng-modal-outlet": [
+        "dist/ng-modal-outlet"
       ],
-      "angular-modal-outlet/*": [
-        "dist/angular-modal-outlet/*"
+      "ng-modal-outlet/*": [
+        "dist/ng-modal-outlet/*"
       ]
     }
   }

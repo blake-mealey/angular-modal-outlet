@@ -1,5 +1,5 @@
 import { Component, EventEmitter } from '@angular/core';
-import { ModalOutletService } from 'angular-modal-outlet';
+import { ModalOutletService } from 'ng-modal-outlet';
 
 @Component({
   selector: 'app-example-dialog',

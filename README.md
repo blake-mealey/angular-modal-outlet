@@ -14,7 +14,7 @@
 ### Build and run
 
 * Clone the source repo
-* Run `ng build angular-modal-outlet` to build the library project
+* Run `ng build ng-modal-outlet` to build the library project
 * Run `ng serve` to run a dev server for the app project
 * Navigate to `http://localhost:4200` in your browser
 

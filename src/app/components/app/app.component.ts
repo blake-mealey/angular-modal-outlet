@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ExampleDialogComponent } from '../example-dialog/example-dialog.component';
-import { ModalOutletService } from 'angular-modal-outlet';
+import { ModalOutletService } from 'ng-modal-outlet';
 import { filter } from 'rxjs/operators';
 
 @Component({

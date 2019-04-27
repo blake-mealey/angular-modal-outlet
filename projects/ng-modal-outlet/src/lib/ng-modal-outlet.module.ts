@@ -13,4 +13,4 @@ import { ModalOutletService } from './services/modal-outlet/modal-outlet.service
   exports: [ModalOutletComponent],
   providers: [ModalOutletService]
 })
-export class AngularModalOutletModule { }
+export class NgModalOutletModule { }
