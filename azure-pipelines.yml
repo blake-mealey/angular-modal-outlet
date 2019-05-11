@@ -29,7 +29,7 @@ steps:
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)/dist/ng-modal-outlet'
-    ArtifactName: 'app'
+    ArtifactName: 'lib'
     publishLocation: 'Container'
   displayName: 'Publish library artifact'
 
