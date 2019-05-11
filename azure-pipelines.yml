@@ -20,6 +20,12 @@ steps:
     ng build --prod
   displayName: 'Build'
 
+- task: CopyFiles@2
+  inputs:
+    Contents: dist/**
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    CleanTargetFolder: true
+
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)/dist/ng-modal-outlet'
