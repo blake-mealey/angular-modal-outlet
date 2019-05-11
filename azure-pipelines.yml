@@ -17,7 +17,7 @@ steps:
 
 - script: |
     ng build --prod ng-modal-outlet
-    ng build --prod
+    ng build --prod --base-href="/ng-modal-outlet/"
   displayName: 'Build'
 
 - task: CopyFiles@2
