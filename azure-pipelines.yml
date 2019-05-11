@@ -18,4 +18,18 @@ steps:
 - script: |
     ng build --prod ng-modal-outlet
     ng build --prod
-  displayName: 'build'
+  displayName: 'Build'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/dist/ng-modal-outlet'
+    ArtifactName: 'app'
+    publishLocation: 'Container'
+  displayName: 'Publish library artifact'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/dist/ng-modal-outlet-app'
+    ArtifactName: 'app'
+    publishLocation: 'Container'
+  displayName: 'Publish app artifact'
